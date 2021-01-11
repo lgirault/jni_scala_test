@@ -1,0 +1,2 @@
+build --verbose_failures --verbose_explanations --explain=bazel_explain.log --worker_verbose=true
+test --test_output=errors

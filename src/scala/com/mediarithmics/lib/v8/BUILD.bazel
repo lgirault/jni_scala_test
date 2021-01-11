@@ -1,0 +1,50 @@
+load("@io_bazel_rules_scala//scala:scala.bzl", "scala_binary", "scala_test")
+
+genrule(
+    name = "gen_lib_so",
+    srcs = ["//external:jar/com/eclipsesource/j2v8/j2v8_linux_x86_64"],
+    outs = ["libj2v8_linux_x86_64.so"],
+    cmd = "jar -xf $(SRCS) libj2v8_linux_x86_64.so && mv libj2v8_linux_x86_64.so $@",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "lib_so",
+    srcs = [":gen_lib_so"],
+)
+
+java_test(
+    name = "java_test",
+    srcs = [
+        "V8JavaTest.java",
+    ],
+    test_class = "com.mediarithmics.lib.v8.V8JavaTest",
+    deps = [
+        ":lib_so",
+        "//3rdparty/jvm/com/eclipsesource/j2v8:j2v8_linux_x86_64",
+    ],
+)
+
+scala_test(
+    name = "test",
+    srcs = [
+        "V8Test.scala",
+    ],
+    deps = [
+        "//3rdparty/jvm/com/eclipsesource/j2v8:j2v8_linux_x86_64",
+    ],
+    data = ["//src/scala/com/mediarithmics/lib/v8:gen_lib_so"],
+    jvm_flags = ["-Djava.library.path=src/scala/com/mediarithmics/lib/v8"],
+)
+
+scala_binary(
+    name = "main",
+    srcs = [
+        "V8Main.scala",
+    ],
+    main_class = "com.mediarithmics.lib.v8.V8Main",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//3rdparty/jvm/com/eclipsesource/j2v8:j2v8_linux_x86_64",
+    ],
+)

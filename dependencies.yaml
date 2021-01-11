@@ -1,0 +1,33 @@
+options:
+  buildHeader: [
+    "load(\"@io_bazel_rules_scala//scala:scala_import.bzl\", \"scala_import\")",
+    "load(\"@io_bazel_rules_scala//scala:scala.bzl\", \"scala_library\", \"scala_binary\", \"scala_test\")"
+  ]
+  languages: [ "java", "scala:2.12.11" ]
+  resolverType: "coursier"
+  resolvers:
+    - id: "mavencentral"
+      type: "default"
+      url: https://repo.maven.apache.org/maven2/
+    - id: "hmrc"
+      type: "default"
+      url: https://hmrc.bintray.com/releases
+  strictVisibility: false
+  transitivity: exports
+  versionConflictPolicy: highest
+
+dependencies:
+  com.eclipsesource.j2v8:
+    j2v8_linux_x86_64:
+      lang: java
+      version: 4.8.0
+
+replacements:
+  org.scala-lang:
+    scala-library:
+      lang: scala/unmangled
+      target: "@io_bazel_rules_scala_scala_library//:io_bazel_rules_scala_scala_library"
+    scala-compiler:
+      lang: scala/unmangled
+      target: "@io_bazel_rules_scala_scala_compiler//:io_bazel_rules_scala_scala_compiler"
+
